@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Una carta para ti ❤️</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;min-height:100vh;overflow-x:hidden;
+    font-family:Arial,sans-serif;color:#633447;
+    background:linear-gradient(145deg,#ffe5ec,#f6e8ff,#fff0f4);
+  }
+  body.no-scroll{overflow:hidden}
+  .page{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:35px 16px;text-align:center}
+  .tag{background:#ffffffb8;padding:8px 15px;border-radius:30px;color:#dd4f70;font-weight:bold}
+  h1{font-size:clamp(2rem,8vw,4rem);margin:18px 0 8px;color:#963451}
+  .sub{opacity:.75}
+  .envelope-wrap{margin:55px 0 25px}
+  .envelope{
+    width:min(340px,88vw);height:min(245px,63vw);
+    position:relative;border:0;background:transparent;cursor:pointer;
+    filter:drop-shadow(0 20px 18px #6f263c40);
+  }
+  .back,.left,.right,.bottom,.flap,.paper,.seal{position:absolute;display:block}
+  .back{inset:0;background:#f58ca0;border-radius:12px}
+  .paper{
+    left:9%;right:9%;top:8%;height:72%;background:#fffaf4;border-radius:8px;
+    z-index:2;padding:25px 18px;text-align:left;font-family:cursive;font-size:1.25rem;
+    transition:transform .65s ease;
+  }
+  .left,.right,.bottom{inset:0;z-index:4;border-radius:12px}
+  .left{background:#ff91a3;clip-path:polygon(0 0,54% 53%,0 100%)}
+  .right{background:#ff7e94;clip-path:polygon(100% 0,46% 53%,100% 100%)}
+  .bottom{background:#ff6c85;clip-path:polygon(0 100%,50% 48%,100% 100%)}
+  .flap{
+    inset:0;z-index:5;background:#ffa0af;border-radius:12px;
+    clip-path:polygon(0 0,50% 60%,100% 0);
+    transform-origin:top;transition:transform .65s ease,z-index .1s .3s;
+  }
+  .seal{
+    z-index:7;left:50%;top:53%;transform:translate(-50%,-50%);
+    width:48px;height:48px;border-radius:50%;display:grid;place-items:center;
+    background:#d93d60;color:white;font-size:1.5rem;transition:.3s;
+  }
+  .envelope.open .flap{transform:rotateX(180deg);z-index:1}
+  .envelope.open .paper{transform:translateY(-45%)}
+  .envelope.open .seal{opacity:0;transform:translate(-50%,-50%) scale(.3)}
+  .buttons{display:flex;gap:12px}
+  .btn{border:0;border-radius:30px;padding:13px 24px;font-size:1rem;font-weight:bold;cursor:pointer}
+  .open-btn,.yes-btn{background:linear-gradient(135deg,#ff6c84,#df496b);color:white}
+  .close-btn{background:white;color:#df496b;border:2px solid #f28da2}
+  .modal{
+    position:fixed;inset:0;z-index:100;display:none;place-items:center;
+    padding:16px;background:#42162880;backdrop-filter:blur(7px);
+  }
+  .modal.show{display:grid}
+  .card{
+    width:min(650px,96vw);max-height:90vh;overflow:auto;position:relative;
+    background:#fffaf4;border-radius:22px;padding:clamp(25px,6vw,55px);
+    text-align:left;box-shadow:0 25px 70px #42162855;
+    animation:pop .35s ease;
+  }
+  @keyframes pop{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:none}}
+  .x{position:absolute;right:14px;top:12px;width:42px;height:42px;border:0;border-radius:50%;font-size:1.8rem;color:#d94365;background:#ffe1e8;cursor:pointer}
+  .date{text-align:right;opacity:.6;font-size:.9rem}
+  .card h2{font-family:cursive;font-size:clamp(2rem,8vw,3.5rem);color:#9c3553;margin:5px 0 22px}
+  .letter{font-family:cursive;font-size:clamp(1.25rem,4.5vw,1.65rem);line-height:1.55}
+  .ascii{white-space:pre;font-family:monospace;font-size:1.2rem;color:#d83f62}
+  .signature{font-family:cursive;font-size:1.5rem;margin-top:28px}
+  .yes-btn{display:block;margin:25px auto 0}
+  #final{text-align:center;color:#b52d53;font-weight:bold;min-height:25px}
+  .heart{
+    position:fixed;bottom:-30px;color:#ff527b45;pointer-events:none;
+    animation:rise linear forwards;
+  }
+  @keyframes rise{to{transform:translateY(-115vh) rotate(360deg);opacity:0}}
+  footer{margin-top:auto;padding-top:30px;opacity:.55;font-size:.85rem}
+</style>
+</head>
+<body>
+<main class="page">
+  <p class="tag">Tengo algo especial para ti</p>
+  <h1>Una carta para mi flaca ❤️</h1>
+  <p class="sub">Toca el sobre o el botón para abrirla.</p>
+
+  <div class="envelope-wrap">
+    <button id="envelope" class="envelope" type="button" aria-label="Abrir carta">
+      <span class="back"></span>
+      <span class="paper">Para: Mi flaca<br><br>Con mucho cariño ❤️</span>
+      <span class="left"></span><span class="right"></span><span class="bottom"></span>
+      <span class="flap"></span><span class="seal">♥</span>
+    </button>
+  </div>
+
+  <div class="buttons">
+    <button id="openBtn" class="btn open-btn" type="button">Abrir carta</button>
+    <button id="resetBtn" class="btn close-btn" type="button">Cerrar</button>
+  </div>
+
+  <footer>Hecho con amor y un poquito de código ✨</footer>
+</main>
+
+<div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <article class="card">
+    <button id="xBtn" class="x" type="button" aria-label="Cerrar">×</button>
+    <p class="date">1 de agosto de 2026</p>
+    <h2>Para mi flaca 💌</h2>
+
+    <div class="letter">
+      <p><strong>Flaca, gracias por estar aquí.</strong></p>
+      <p>
+        Estas semanas han sido maravillosas gracias a tu presencia, tu amor y tu ternura.
+        Me encanta compartir contigo, conocerte cada día un poquito más y sentir que,
+        sin darme cuenta, te has convertido en alguien muy especial para mí.
+      </p>
+      <p>
+        Gracias por cada momento, cada sonrisa y por la tranquilidad que me transmites.
+        Quizás esta carta sea pequeña, pero está hecha con muchísimo cariño y expresa
+        algo que a veces me cuesta decir con palabras: me haces muy feliz y me encanta
+        tenerte en mi vida. ❤️‍🩹
+      </p>
+      <p>
+        Espero que esto sea apenas el comienzo de muchos momentos bonitos juntos.
+      </p>
+      <div class="ascii">(\_/)
+( • .•)
+/&gt;❤️‍🩹</div>
+      <p><strong>¿Me permites seguir creando momentos bonitos contigo? ❤️</strong></p>
+    </div>
+
+    <p class="signature">Con mucho cariño,<br><strong>Ansoni</strong></p>
+    <button id="yesBtn" class="btn yes-btn" type="button">Sí, quiero ❤️</button>
+    <p id="final"></p>
+  </article>
+</div>
+
+<script>
+(function(){
+  const envelope = document.getElementById('envelope');
+  const openBtn = document.getElementById('openBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const modal = document.getElementById('modal');
+  const xBtn = document.getElementById('xBtn');
+  const yesBtn = document.getElementById('yesBtn');
+  const final = document.getElementById('final');
+
+  function openLetter(){
+    envelope.classList.add('open');
+    setTimeout(function(){
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden','false');
+      document.body.classList.add('no-scroll');
+    }, 500);
+  }
+
+  function closeLetter(){
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden','true');
+    document.body.classList.remove('no-scroll');
+    final.textContent = '';
+    setTimeout(function(){ envelope.classList.remove('open'); }, 150);
+  }
+
+  envelope.onclick = openLetter;
+  openBtn.onclick = openLetter;
+  resetBtn.onclick = closeLetter;
+  xBtn.onclick = closeLetter;
+
+  modal.onclick = function(e){
+    if(e.target === modal) closeLetter();
+  };
+
+  yesBtn.onclick = function(){
+    final.textContent = 'Gracias por llegar a mi vida. Te quiero muchísimo ❤️';
+    for(let i=0;i<30;i++){
+      const h=document.createElement('span');
+      h.className='heart';
+      h.textContent=Math.random()>.3?'♥':'✨';
+      h.style.left=(Math.random()*100)+'vw';
+      h.style.fontSize=(15+Math.random()*25)+'px';
+      h.style.animationDuration=(2+Math.random()*3)+'s';
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(),5200);
+    }
+  };
+
+  setInterval(function(){
+    const h=document.createElement('span');
+    h.className='heart';
+    h.textContent=Math.random()>.35?'♥':'♡';
+    h.style.left=(Math.random()*100)+'vw';
+    h.style.fontSize=(13+Math.random()*22)+'px';
+    h.style.animationDuration=(7+Math.random()*6)+'s';
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),14000);
+  },800);
+})();
+</script>
+</body>
+</html>
